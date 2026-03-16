@@ -1,4 +1,4 @@
-﻿namespace SixSlime.AxBind3.Types;
+﻿namespace SixSlime.AxBind3.TomlModel;
 
 public abstract class TomlValidatable
 {

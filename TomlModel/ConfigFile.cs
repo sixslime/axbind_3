@@ -1,11 +1,11 @@
-﻿namespace SixSlime.AxBind3.Types;
+﻿namespace SixSlime.AxBind3.TomlModel;
 using Tomlyn.Serialization;
 using Tomlyn;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
-public class ConfigFile
+
+public class ConfigFile : TomlValidatable
 {
+    protected override (object?, string)[] RequiredKeys => [];
     public List<Pass> Passes { get; set; } = [];
 
     public static ConfigFile FromToml(string toml)
@@ -13,6 +13,3 @@ public class ConfigFile
         return TomlSerializer.Deserialize(toml, AppTomlContext.Default.ConfigFile)!;
     }
 }
-[TomlSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower)]
-[TomlSerializable(typeof(ConfigFile))]
-internal partial class AppTomlContext : TomlSerializerContext;
