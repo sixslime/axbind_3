@@ -56,11 +56,17 @@ internal class TransformBuffer
         }
     }
 
-    public void ApplyFunction(Func<string, string> function)
+    public async Task ApplyFunction(TransformFunction function)
     {
+        var processes = new Task<string>[_activeText.Length];
         for (int i = 0; i < _activeText.Length; i++)
         {
-            _activeText[i] = function(_activeText[i]);
+            processes[i] = function.Run(_activeText[i]);
+        }
+        var results = await Task.WhenAll(processes);
+        for (int i = 0; i < _activeText.Length; i++)
+        {
+            _activeText[i] = results[i];
         }
     }
     private readonly string[] _inactiveText;

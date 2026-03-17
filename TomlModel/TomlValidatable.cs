@@ -3,9 +3,10 @@
 public abstract class TomlValidatable
 {
     protected abstract (object?, string)[] RequiredKeys { get; }
-    private RequiredKeysMissingException? ValidateRequiredKeys(params (object?, string)[] requiredKeys)
+    public void ValidateRequiredKeys(string contextLocation)
     {
-        var missing = requiredKeys.Where(x => x.Item1 is null).Select(x => x.Item2).ToArray();
-        return missing.Length > 0 ? new RequiredKeysMissingException(missing) : null;
+        var missing = RequiredKeys.Where(x => x.Item1 is null).Select(x => x.Item2).ToArray();
+        if (missing.Length > 0)
+            throw new ProgramException($"required keys [{string.Join(", ", missing)}] are not present in: {contextLocation}");
     }
 }
