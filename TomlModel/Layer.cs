@@ -8,5 +8,5 @@ public class Layer : TomlValidatable
     ];
 
     public string? Files { get; set; }
-    public LayerTransform? Transform { get; set; };
+    public LayerTransform? Transform { get; set; }
 }
