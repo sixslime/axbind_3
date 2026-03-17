@@ -2,7 +2,6 @@
 using Tomlyn.Serialization;
 using Tomlyn;
 
-
 public class ConfigFile : TomlValidatable
 {
     protected override (object?, string)[] RequiredKeys => [];
