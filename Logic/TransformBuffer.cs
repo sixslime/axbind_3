@@ -2,7 +2,7 @@ namespace SixSlime.AxBind3.Logic;
 
 using System.Text;
 
-internal class TransformBuffer
+public class TransformBuffer
 {
     public static TransformBuffer Create(string text, string captureStart, string captureEnd, string? captureEscape)
     {

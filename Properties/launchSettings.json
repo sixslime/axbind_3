@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SixSlime.AxBind3": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\globb\\Desktop\\temp\\axbind_poc\\target_dir C:\\Users\\globb\\Desktop\\temp\\axbind_poc\\out -c C:\\Users\\globb\\Desktop\\temp\\axbind_poc"
+    }
+  }
+}

@@ -8,4 +8,4 @@ using Tomlyn.Serialization;
 [TomlSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower)]
 [TomlSerializable(typeof(ProfileFile))]
 [TomlSerializable(typeof(MapFile))]
-internal partial class AppTomlContext : TomlSerializerContext;
+public partial class AppTomlContext : TomlSerializerContext;

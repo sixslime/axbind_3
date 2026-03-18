@@ -2,7 +2,7 @@ namespace SixSlime.AxBind3.Logic;
 
 using System.Diagnostics;
 
-internal class TransformFunction(string path)
+public class TransformFunction(string path)
 {
     private readonly string _path = path;
 

@@ -5,7 +5,7 @@ using Tomlyn;
 using Logic;
 using System.CommandLine;
 using System.IO;
-internal class Program
+public class Program
 {
     private static async Task<int> Main(string[] args)
     {
@@ -13,17 +13,19 @@ internal class Program
         var outputDirArg = new Argument<DirectoryInfo>("output-dir");
         var configDirOption = new Option<DirectoryInfo?>("--config-dir", "-c")
         {
+            Description = "Directory to source profiles/maps/functions from (defaults to $HOME/.config/axbind)",
             DefaultValueFactory = _ => Environment.GetEnvironmentVariable("HOME") is { } home ? new(Path.Join(home, ".config", "axbind")) : null
         };
         var profileOption = new Option<string?>("--profile", "-p")
         {
+            Description = $"Profile to execute (name of toml file in <config-dir>/{ResourceLoader.PROFILES_DIR} without '.toml' extension)",
             DefaultValueFactory = _ => "default"
         };
         var safeOption = new Option<bool>("--safe", "-s")
         {
-            Description = "prevents overwriting files in the output directory."
+            Description = "Prevent overwriting files in the output directory"
         };
-        var rootCommand = new RootCommand("AxBind3")
+        var rootCommand = new RootCommand("A contrived and declarative text-replacement program")
         {
             targetDirArg,
             outputDirArg,
@@ -61,6 +63,7 @@ internal class Program
         }
         catch (Exception ex)
         {
+            throw;
             switch (ex)
             {
                 case ProgramException v:

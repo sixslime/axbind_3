@@ -2,7 +2,7 @@ namespace SixSlime.AxBind3.Logic;
 
 using Microsoft.Extensions.FileSystemGlobbing;
 
-internal class TargetDirManager(string rootPath)
+public class TargetDirManager(string rootPath)
 {
     public string RootPath { get; } = rootPath;
     private readonly Dictionary<GlobWrapper, string[]> _globCache = [];
@@ -38,6 +38,8 @@ internal class TargetDirManager(string rootPath)
             {
                 if (!_globs[i].SequenceEqual(other._globs[i])) return false;
             }
+
+            return true;
         }
 
         public override int GetHashCode()

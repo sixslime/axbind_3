@@ -37,8 +37,8 @@ public class ProfileFile : TomlValidatable
             {
                 var layer = pass.Layers[layerIndex];
                 layer.ValidateRequiredKeys($"pass {passIndex + 1}, layer {layerIndex + 1}");
-                var layerFiles = layer.Files!.ToArray();
-                foreach (var targetPath in targetDir.GetFiles(layer.Files is null ? [passFiles] : [passFiles, layerFiles]))
+                var layerFiles = layer.Files?.ToArray();
+                foreach (var targetPath in targetDir.GetFiles(layerFiles is null ? [passFiles] : [passFiles, layerFiles]))
                 {
                     var bufferExisted = fileBuffers.TryGetValue(targetPath, out var buf);
                     var targetBuffer = bufferExisted ? buf! : TransformBuffer.Create(fileWrites[targetPath], pass.CaptureStart!, pass.CaptureEnd!, pass.CaptureEscapeSequence);
