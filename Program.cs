@@ -4,12 +4,13 @@ using TomlModel;
 using Tomlyn;
 using Logic;
 using System.CommandLine;
-
+using System.IO;
 internal class Program
 {
     private static async Task<int> Main(string[] args)
     {
         var targetDirArg = new Argument<DirectoryInfo>("target-dir");
+        var outputDirArg = new Argument<DirectoryInfo>("output-dir");
         var configDirOption = new Option<DirectoryInfo?>("--config-dir", "-c")
         {
             DefaultValueFactory = _ => Environment.GetEnvironmentVariable("HOME") is { } home ? new(Path.Join(home, ".config", "axbind")) : null
@@ -18,11 +19,17 @@ internal class Program
         {
             DefaultValueFactory = _ => "default"
         };
+        var safeOption = new Option<bool>("--safe", "-s")
+        {
+            Description = "prevents overwriting files in the output directory."
+        };
         var rootCommand = new RootCommand("AxBind3")
         {
             targetDirArg,
+            outputDirArg,
             profileOption,
-            configDirOption
+            configDirOption,
+            safeOption,
         };
         rootCommand.SetAction(async c =>
         {
@@ -30,14 +37,22 @@ internal class Program
             if (!targetDir.Exists)
                 throw new ProgramException($"target directory '{targetDir}' does not exist.");
             var configDir = c.GetValue(configDirOption)!;
-            if (configDir.Exists)
+            if (!configDir.Exists)
                 throw new ProgramException($"config directory '{configDir}' does not exist");
+            var outputDir = c.GetValue(outputDirArg)!;
             var profile = c.GetValue(profileOption)!;
+            var safeMode = c.GetValue(safeOption);
             var resources = new ResourceLoader(configDir.FullName);
-            var fileWrites = await resources.LoadProfile(profile).Evaluate(targetDir.FullName, resources);
-            await Task.WhenAll(fileWrites.Select(
-                fileWrite =>
-                    File.WriteAllTextAsync(fileWrite.Path, fileWrite.Contents)));
+            var targetTransforms = await resources.LoadProfile(profile).Evaluate(targetDir.FullName, resources);
+            await Task.WhenAll(targetTransforms.Select(
+                transformed =>
+                {
+                    var relativePath = Path.GetRelativePath(targetDir.FullName, transformed.Path);
+                    var outPath = Path.Join(outputDir.FullName, relativePath);
+                    if (safeMode && File.Exists(outPath)) return Task.CompletedTask;
+                    if (Path.GetDirectoryName(outPath) is { } containingDir) Directory.CreateDirectory(containingDir);
+                    return File.WriteAllTextAsync(outPath, transformed.Contents);
+                }));
             return 0;
         });
         try
