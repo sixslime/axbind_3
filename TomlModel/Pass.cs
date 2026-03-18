@@ -8,10 +8,11 @@ public class Pass : TomlValidatable
     public string? CaptureStart { get; set; }
     public List<string>? Files { get; set; }
 
-    protected override (object?, string)[] RequiredKeys =>
+    protected override (object?, string, bool)[] CheckedKeys =>
     [
-        (CaptureStart, "capture_start"),
-        (CaptureEnd, "capture_end"),
-        (Files, "files")
+        (CaptureStart, "capture_start", true),
+        (CaptureEnd, "capture_end", true),
+        (Files, "files", true),
+        (Layers, "layers", true),
     ];
 }

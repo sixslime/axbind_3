@@ -4,5 +4,5 @@ public class LayerTransform : TomlValidatable
 {
     public string? Function { get; set; }
     public string? Map { get; set; }
-    protected override (object?, string)[] RequiredKeys => [];
+    protected override (object?, string, bool)[] CheckedKeys => [];
 }

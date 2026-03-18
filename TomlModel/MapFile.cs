@@ -14,9 +14,10 @@ public class MapFile : TomlValidatable
     public Dictionary<string, string> Map { get; set; } = [];
     public MapMetaOptions? Meta { get; set; }
 
-    protected override (object?, string)[] RequiredKeys =>
+    protected override (object?, string, bool)[] CheckedKeys =>
     [
-        (Map, "map")
+        (Map, "map", true),
+        (Meta, "meta", false),
     ];
 
 }

@@ -63,7 +63,6 @@ public class Program
         }
         catch (Exception ex)
         {
-            throw;
             switch (ex)
             {
                 case ProgramException v:

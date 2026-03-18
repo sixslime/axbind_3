@@ -6,8 +6,8 @@ public class Layer : TomlValidatable
 
     public List<string>? Files { get; set; }
 
-    protected override (object?, string)[] RequiredKeys =>
+    protected override (object?, string, bool)[] CheckedKeys =>
     [
-        (Transform, "transform")
+        (Transform, "transform", true)
     ];
 }

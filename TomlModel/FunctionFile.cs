@@ -14,9 +14,9 @@ public class FunctionFile : TomlValidatable
     public FunctionInfo? Function { get; set; }
     public FunctionMetaOptions? Meta { get; set; }
 
-    protected override (object?, string)[] RequiredKeys =>
+    protected override (object?, string, bool)[] CheckedKeys =>
     [
-        (Meta, "meta"),
-        (Function, "function"),
+        (Meta, "meta", true),
+        (Function, "function", true),
     ];
 }

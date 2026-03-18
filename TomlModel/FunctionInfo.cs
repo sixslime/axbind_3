@@ -6,10 +6,8 @@ public class FunctionInfo : TomlValidatable
     public string? Stdin { get; set; }
     public List<string>? Args { get; set; }
 
-    protected override (object?, string)[] RequiredKeys =>
+    protected override (object?, string, bool)[] CheckedKeys =>
     [
-        (Binary, "binary"),
-        (Stdin, "stdin"),
-        (Args, "args")
+        (Binary, "binary", true),
     ];
 }
