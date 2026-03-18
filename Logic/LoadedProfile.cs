@@ -37,8 +37,11 @@ public record LoadedProfile(string Name) : ILoaded
         if (Passes.Count == 0) return [];
         Dictionary<string, string> fileWrites = [];
         var targetDir = new TargetDirManager(targetDirectory);
+        int passIndex = -1;
         foreach (var pass in Passes)
         {
+            passIndex++;
+            Logger.Info($"[pass {passIndex + 1}]");
             List<KeyValuePair<string, Task<string>>> fileReads = [];
             var passFiles = pass.Files!.ToArray();
             foreach (var targetPath in targetDir.GetFiles(passFiles))
@@ -48,11 +51,15 @@ public record LoadedProfile(string Name) : ILoaded
             for (var i = 0; i < readResults.Length; i++) fileWrites[fileReads[i].Key] = readResults[i];
 
             Dictionary<string, TransformBuffer> fileBuffers = new(fileWrites.Count);
+            int layerIndex = -1;
             foreach (var layer in pass.Layers)
             {
+                layerIndex++;
+                Logger.Info($" [layer {layerIndex + 1}]");
                 var layerFiles = layer.Files?.ToArray();
                 foreach (var targetPath in targetDir.GetFiles(layerFiles is null ? [passFiles] : [passFiles, layerFiles]))
                 {
+                    Logger.VerboseInfo($"  [file '{targetPath}']");
                     var bufferExisted = fileBuffers.TryGetValue(targetPath, out var buf);
                     var targetBuffer = bufferExisted ? buf! : TransformBuffer.Create(fileWrites[targetPath], pass.CaptureStart, pass.CaptureEnd, pass.CaptureEscapeSequence);
                     switch (layer.Transform)

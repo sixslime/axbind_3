@@ -11,23 +11,27 @@ public record LoadedFunction(string Name) : ILoaded
 
     public async Task<string> Run(string input)
     {
+        // Why the fuck not.
+        var binary = BinaryPath.Replace(Proxy, input);
+        var args = Args is not null ? string.Join(' ', Args.Select(x => x.Replace(Proxy, input))) : "";
+        var stdin = Stdin?.Replace(Proxy, input);
         ProcessStartInfo startInfo = new()
         {
-            // Why the fuck not.
-            FileName = BinaryPath.Replace(Proxy, input),
+            FileName = binary,
             UseShellExecute = false,
             CreateNoWindow = true,
             RedirectStandardInput = true,
             RedirectStandardOutput = true,
-            Arguments = Args is not null ? string.Join(' ', Args.Select(x => x.Replace(Proxy, input))) : "",
+            Arguments = args,
         };
         var process = Process.Start(startInfo);
         if (process is null)
             throw new ProgramException($"Could not run command '${BinaryPath} {startInfo.Arguments}'");
         var writer = process.StandardInput;
-        if (Stdin is not null)
-            writer.Write(Stdin.Replace(Proxy, input));
+        if (stdin is not null)
+            writer.Write(stdin);
         writer.Close();
+        Logger.VerboseInfo($"    $ {stdin} > {binary} {args}");
         var o = process.StandardOutput.ReadToEnd();
         await process.WaitForExitAsync();
         return o;

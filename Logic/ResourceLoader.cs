@@ -101,6 +101,7 @@ public class ResourceLoader(string rootConfigPath)
     private string GetResourceContent(string name, string dir, string humanTypeName, out string filePath)
     {
         filePath = Path.Join(RootConfigPath, dir, name) + ".toml";
+        Logger.VerboseInfo($"# LOADING '{filePath}'");
         if (!File.Exists(filePath))
             throw new ProgramException($"expected a file at location ${filePath} for {humanTypeName} named '${name}'");
         return File.ReadAllText(filePath);

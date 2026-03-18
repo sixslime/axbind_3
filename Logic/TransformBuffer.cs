@@ -58,18 +58,34 @@ public class TransformBuffer
 
     public async Task ApplyFunction(LoadedFunction function)
     {
+        Logger.VerboseInfo($"   [function '{function.Name}']");
         var processes = new Task<string>[_activeText.Length];
         for (var i = 0; i < _activeText.Length; i++) processes[i] = function.Run(_activeText[i]);
         var results = await Task.WhenAll(processes);
-        for (var i = 0; i < _activeText.Length; i++) _activeText[i] = results[i];
+        for (var i = 0; i < _activeText.Length; i++)
+        {
+            Logger.VerboseInfo($"    {_activeText[i]} => {results[i]}");
+            _activeText[i] = results[i];
+        }
     }
 
     public void ApplyMap(LoadedMap map)
     {
+        Logger.VerboseInfo($"   [map '{map.Name}']");
         var mappings = map.Mappings;
         for (var i = 0; i < _activeText.Length; i++)
+        {
             if (mappings.TryGetValue(_activeText[i], out var replacement))
+            {
+                Logger.VerboseInfo($"    - {_activeText[i]} => {replacement}");
                 _activeText[i] = replacement;
+            }
+            else
+            {
+                Logger.VerboseInfo($"    X {_activeText[i]}");
+            }
+        }
+            
     }
 
     public string GetResult()

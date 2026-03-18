@@ -25,6 +25,14 @@ public class Program
         {
             Description = "Prevent overwriting files in the output directory"
         };
+        var verboseOption = new Option<bool>("--verbose", "-v")
+        {
+            Description = "Run with verbose stderr output"
+        };
+        var quietOption = new Option<bool>("--quiet", "-q")
+        {
+            Description = "Run with no stderr output (takes precedence over -v)"
+        };
         var rootCommand = new RootCommand("A contrived and declarative text-replacement program")
         {
             targetDirArg,
@@ -32,9 +40,14 @@ public class Program
             profileOption,
             configDirOption,
             safeOption,
+            verboseOption,
+            quietOption,
         };
         rootCommand.SetAction(async c =>
         {
+            Logger.SetVerbosity(1);
+            if (c.GetValue(verboseOption)) Logger.SetVerbosity(2);
+            if (c.GetValue(quietOption)) Logger.SetVerbosity(0);
             var targetDir = c.GetValue(targetDirArg)!;
             if (!targetDir.Exists)
                 throw new ProgramException($"target directory '{targetDir}' does not exist.");
@@ -66,27 +79,15 @@ public class Program
             switch (ex)
             {
                 case ProgramException v:
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.Error.WriteLine(v.Message);
+                    Logger.Error("[!] " + v.Message);
                     return 1;
                 case TomlException v:
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.Error.WriteLine("[TOML PARSING ERROR]");
-                    Console.ForegroundColor = ConsoleColor.Gray;
-                    Console.WriteLine(v.Message);
+                    Logger.Error("[toml error] " + v.Message);
                     return 2;
                 default:
-                    Console.ForegroundColor = ConsoleColor.DarkRed;
-                    Console.Error.WriteLine("[UNEXPECTED EXCEPTION]");
-                    Console.Error.WriteLine(ex.Message);
-                    Console.ForegroundColor = ConsoleColor.Gray;
-                    Console.Error.WriteLine(ex.StackTrace);
+                    Logger.UnexpectedException(ex);
                     return 3;
             }
-        }
-        finally
-        {
-            Console.ResetColor();
         }
     }
 }
