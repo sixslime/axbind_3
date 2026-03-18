@@ -25,7 +25,8 @@ public class ProfileFile : TomlValidatable
             var pass = Passes[passIndex];
             pass.ValidateRequiredKeys($"pass {passIndex + 1}");
             List<KeyValuePair<string, Task<string>>> fileReads = [];
-            foreach (var targetPath in targetDir.GetFiles(pass.Files!))
+            var passFiles = pass.Files.ToArray();
+            foreach (var targetPath in targetDir.GetFiles(passFiles))
                 if (!fileWrites.ContainsKey(targetPath))
                     fileReads.Add(KeyValuePair.Create(targetPath, File.ReadAllTextAsync(targetPath)));
             var readResults = await Task.WhenAll(fileReads.Select(x => x.Value));
@@ -36,7 +37,8 @@ public class ProfileFile : TomlValidatable
             {
                 var layer = pass.Layers[layerIndex];
                 layer.ValidateRequiredKeys($"pass {passIndex + 1}, layer {layerIndex + 1}");
-                foreach (var targetPath in targetDir.GetFiles(layer.Files is null ? [pass.Files!] : [pass.Files!, layer.Files]))
+                var layerFiles = layer.Files!.ToArray();
+                foreach (var targetPath in targetDir.GetFiles(layer.Files is null ? [passFiles] : [passFiles, layerFiles]))
                 {
                     var bufferExisted = fileBuffers.TryGetValue(targetPath, out var buf);
                     var targetBuffer = bufferExisted ? buf! : TransformBuffer.Create(fileWrites[targetPath], pass.CaptureStart!, pass.CaptureEnd!, pass.CaptureEscapeSequence);
