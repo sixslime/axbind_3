@@ -56,7 +56,7 @@ public class TransformBuffer
         _activeText = active;
     }
 
-    public async Task ApplyFunction(TransformFunction function)
+    public async Task ApplyFunction(LoadedFunction function)
     {
         var processes = new Task<string>[_activeText.Length];
         for (var i = 0; i < _activeText.Length; i++) processes[i] = function.Run(_activeText[i]);
@@ -64,10 +64,11 @@ public class TransformBuffer
         for (var i = 0; i < _activeText.Length; i++) _activeText[i] = results[i];
     }
 
-    public void ApplyMap(IReadOnlyDictionary<string, string> map)
+    public void ApplyMap(LoadedMap map)
     {
+        var mappings = map.Mappings;
         for (var i = 0; i < _activeText.Length; i++)
-            if (map.TryGetValue(_activeText[i], out var replacement))
+            if (mappings.TryGetValue(_activeText[i], out var replacement))
                 _activeText[i] = replacement;
     }
 

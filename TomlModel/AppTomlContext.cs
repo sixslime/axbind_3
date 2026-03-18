@@ -7,5 +7,6 @@ using Tomlyn.Serialization;
 
 [TomlSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower)]
 [TomlSerializable(typeof(ProfileFile))]
+[TomlSerializable(typeof(FunctionFile))]
 [TomlSerializable(typeof(MapFile))]
 public partial class AppTomlContext : TomlSerializerContext;
