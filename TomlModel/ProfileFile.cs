@@ -25,7 +25,7 @@ public class ProfileFile : TomlValidatable
             var pass = Passes[passIndex];
             pass.ValidateRequiredKeys($"pass {passIndex + 1}");
             List<KeyValuePair<string, Task<string>>> fileReads = [];
-            var passFiles = pass.Files.ToArray();
+            var passFiles = pass.Files!.ToArray();
             foreach (var targetPath in targetDir.GetFiles(passFiles))
                 if (!fileWrites.ContainsKey(targetPath))
                     fileReads.Add(KeyValuePair.Create(targetPath, File.ReadAllTextAsync(targetPath)));
