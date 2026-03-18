@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.IO;
 
 // this could be standardized, I dont care.
-internal class ResourceLoader(string rootConfigPath)
+public class ResourceLoader(string rootConfigPath)
 {
     public const string CONFIGS_DIR = "configs";
     public const string FUNCTIONS_DIR = "functions";

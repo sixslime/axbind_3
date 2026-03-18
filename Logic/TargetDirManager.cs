@@ -3,9 +3,9 @@ using Microsoft.Extensions.FileSystemGlobbing;
 internal class TargetDirManager(string rootPath)
 {
     public string RootPath { get; } = rootPath;
-    private Dictionary<GlobWrapper, TargetFile[]> _globCache = [];
+    private Dictionary<GlobWrapper, string[]> _globCache = [];
 
-    public TargetFile[] GetFiles(params string[] globs)
+    public string[] GetFiles(params string[] globs)
     {
         if (globs.Length == 0) return [];
         GlobWrapper globWrapper = new(globs);
@@ -15,15 +15,9 @@ internal class TargetDirManager(string rootPath)
         {
             filePaths.IntersectWith(new Matcher().AddInclude(glob).GetResultsInFullPath(RootPath));
         }
-
-        var targetFiles = filePaths.Select(path => new TargetFile()
-        {
-            OriginalText = File.ReadAllText(path),
-            Path = path,
-        })
-        .ToArray();
-        _globCache[globWrapper] = targetFiles;
-        return targetFiles;
+        var o = filePaths.ToArray();
+        _globCache[globWrapper] = o;
+        return o;
     }
 
     private class GlobWrapper(string[] globs)
