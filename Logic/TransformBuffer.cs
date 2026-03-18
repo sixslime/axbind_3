@@ -47,40 +47,34 @@ internal class TransformBuffer
         return new(inactive.ToArray(), active.ToArray());
     }
 
-    public void ApplyMap(IReadOnlyDictionary<string, string> map)
-    {
-        for (int i = 0; i < _activeText.Length; i++)
-        {
-            if (map.TryGetValue(_activeText[i], out var replacement))
-                _activeText[i] = replacement;
-        }
-    }
-
-    public async Task ApplyFunction(TransformFunction function)
-    {
-        var processes = new Task<string>[_activeText.Length];
-        for (int i = 0; i < _activeText.Length; i++)
-        {
-            processes[i] = function.Run(_activeText[i]);
-        }
-        var results = await Task.WhenAll(processes);
-        for (int i = 0; i < _activeText.Length; i++)
-        {
-            _activeText[i] = results[i];
-        }
-    }
-    private readonly string[] _inactiveText;
     private readonly string[] _activeText;
+    private readonly string[] _inactiveText;
+
     private TransformBuffer(string[] inactive, string[] active)
     {
         _inactiveText = inactive;
         _activeText = active;
     }
 
+    public async Task ApplyFunction(TransformFunction function)
+    {
+        var processes = new Task<string>[_activeText.Length];
+        for (var i = 0; i < _activeText.Length; i++) processes[i] = function.Run(_activeText[i]);
+        var results = await Task.WhenAll(processes);
+        for (var i = 0; i < _activeText.Length; i++) _activeText[i] = results[i];
+    }
+
+    public void ApplyMap(IReadOnlyDictionary<string, string> map)
+    {
+        for (var i = 0; i < _activeText.Length; i++)
+            if (map.TryGetValue(_activeText[i], out var replacement))
+                _activeText[i] = replacement;
+    }
+
     public string GetResult()
     {
         StringBuilder text = new();
-        for (int i = 0; i < _inactiveText.Length; i++)
+        for (var i = 0; i < _inactiveText.Length; i++)
         {
             text.Append(_inactiveText[i]);
             if (i < _activeText.Length) text.Append(_activeText[i]);
@@ -88,5 +82,4 @@ internal class TransformBuffer
 
         return text.ToString();
     }
-
 }

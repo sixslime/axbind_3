@@ -7,26 +7,13 @@ using System.IO;
 // this could be standardized, I dont care.
 public class ResourceLoader(string rootConfigPath)
 {
-    public const string CONFIGS_DIR = "configs";
     public const string FUNCTIONS_DIR = "functions";
     public const string MAPS_DIR = "maps";
+    public const string PROFILES_DIR = "profiles";
     public string RootConfigPath { get; } = rootConfigPath;
-    private readonly Dictionary<string, ConfigFile> _loadedConfigs = [];
     private readonly Dictionary<string, MapFile> _loadedMaps = [];
+    private readonly Dictionary<string, ProfileFile> _loadedConfigs = [];
     private readonly Dictionary<string, TransformFunction> _loadedFunctions = [];
-
-    public ConfigFile LoadConfig(string name)
-    {
-        if (_loadedConfigs.TryGetValue(name, out var cachedVal)) return cachedVal;
-        var filePath = Path.Join(RootConfigPath, CONFIGS_DIR, name) + ".toml";
-        if (!File.Exists(filePath))
-            throw new ProgramException($"expected a file at location ${filePath} for config named '${name}'");
-        var fileText = File.ReadAllText(filePath);
-        var config = ConfigFile.FromToml(fileText);
-        config.ValidateRequiredKeys($"file '{filePath}'");
-        _loadedConfigs[name] = config;
-        return config;
-    }
 
     public TransformFunction LoadFunction(string name)
     {
@@ -50,5 +37,18 @@ public class ResourceLoader(string rootConfigPath)
         map.ValidateRequiredKeys($"file '{filePath}'");
         _loadedMaps[name] = map;
         return map;
+    }
+
+    public ProfileFile LoadProfile(string name)
+    {
+        if (_loadedConfigs.TryGetValue(name, out var cachedVal)) return cachedVal;
+        var filePath = Path.Join(RootConfigPath, PROFILES_DIR, name) + ".toml";
+        if (!File.Exists(filePath))
+            throw new ProgramException($"expected a file at location ${filePath} for config named '${name}'");
+        var fileText = File.ReadAllText(filePath);
+        var config = ProfileFile.FromToml(fileText);
+        config.ValidateRequiredKeys($"file '{filePath}'");
+        _loadedConfigs[name] = config;
+        return config;
     }
 }

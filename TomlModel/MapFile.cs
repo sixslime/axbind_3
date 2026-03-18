@@ -1,15 +1,23 @@
 ﻿namespace SixSlime.AxBind3.TomlModel;
+
 using Tomlyn.Serialization;
 using Tomlyn;
 using Logic;
+
 public class MapFile : TomlValidatable
 {
+    public static MapFile FromToml(string toml)
+    {
+        return TomlSerializer.Deserialize(toml, AppTomlContext.Default.MapFile)!;
+    }
+
+    public Dictionary<string, string> Map { get; set; } = [];
+    public MapMetaOptions? Meta { get; set; }
+
     protected override (object?, string)[] RequiredKeys =>
     [
         (Map, "map")
     ];
-    public MapMetaOptions? Meta { get; set; }
-    public Dictionary<string, string> Map { get; set; } = [];
 
     // will happily stack overflow if map inherits itself.
     public Dictionary<string, string> GetMappings(ResourceLoader loader)
@@ -22,9 +30,5 @@ public class MapFile : TomlValidatable
             .Concat(Map)
             .GroupBy(x => x.Key)
             .ToDictionary(group => group.Key, group => group.Last().Value);
-    }
-    public static MapFile FromToml(string toml)
-    {
-        return TomlSerializer.Deserialize(toml, AppTomlContext.Default.MapFile)!;
     }
 }

@@ -4,22 +4,22 @@ using Tomlyn.Serialization;
 using Tomlyn;
 using Logic;
 
-public class ConfigFile : TomlValidatable
+public class ProfileFile : TomlValidatable
 {
-    public static ConfigFile FromToml(string toml)
+    public static ProfileFile FromToml(string toml)
     {
-        return TomlSerializer.Deserialize(toml, AppTomlContext.Default.ConfigFile)!;
+        return TomlSerializer.Deserialize(toml, AppTomlContext.Default.ProfileFile)!;
     }
 
     public List<Pass> Passes { get; set; } = [];
     protected override (object?, string)[] RequiredKeys => [];
 
     // egregious.
-    public async Task<TargetFile[]> Evaluate(string rootPath, ResourceLoader loader)
+    public async Task<TargetFile[]> Evaluate(string targetDirectory, ResourceLoader loader)
     {
         if (Passes.Count == 0) return [];
         Dictionary<string, string> fileWrites = [];
-        var targetDir = new TargetDirManager(rootPath);
+        var targetDir = new TargetDirManager(targetDirectory);
         for (var passIndex = 0; passIndex < Passes.Count; passIndex++)
         {
             var pass = Passes[passIndex];
