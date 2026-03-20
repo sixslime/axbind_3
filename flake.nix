@@ -30,3 +30,5 @@
         });
 }
 # nix build .#packages.x86_64-linux.default.passthru.fetch-deps
+# ./result ./deps.json
+# BIG NOTE: this probably breaks things for anything other than 'x86_64-linux' (even though eachDefaultSystem is used), we should build a 'deps.json' for each system, however I cant be bothered because i'm going to rewrite this in rust anyway. fuck you microsoft.
