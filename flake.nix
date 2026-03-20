@@ -20,8 +20,25 @@
                 nugetDeps = ./deps.json;
 
                 dotnet-sdk = pkgs.dotnetCorePackages.sdk_10_0;
-                # for native AOT i guess.
+                dotnet-runtime = null; # AOT produces a native binary; no managed runtime needed
+
                 nativeBuildInputs = with pkgs; [ clang zlib ];
+
+                # The default dotnetInstallHook passes -p:PublishTrimmed=false,
+                # which hard-errors when PublishAot=true. Take over the phase directly.
+                installPhase = ''
+                    runHook preInstall
+
+                    mkdir -p $out/bin
+                    dotnet publish ./SixSlime.AxBind3.csproj \
+                        --no-restore \
+                        -c Release \
+                        -r linux-x64 \
+                        --self-contained \
+                        -o $out/bin
+
+                    runHook postInstall
+                '';
             };
 
             devShells.default = pkgs.mkShell {
