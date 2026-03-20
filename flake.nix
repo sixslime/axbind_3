@@ -20,12 +20,12 @@
                 nugetDeps = ./deps.json;
 
                 dotnet-sdk = pkgs.dotnetCorePackages.sdk_10_0;
-
-                selfContainedBuild = true;
+                # for native AOT i guess.
+                nativeBuildInputs = with pkgs; [ clang zlib ];
             };
 
             devShells.default = pkgs.mkShell {
-                packages = [ pkgs.dotnetCorePackages.sdk_8_0 ];
+                packages = [ pkgs.dotnetCorePackages.sdk_10_0 ];
             };
         });
 }
