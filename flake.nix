@@ -29,3 +29,4 @@
             };
         });
 }
+# nix build .#packages.x86_64-linux.default.passthru.fetch-deps
